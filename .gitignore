@@ -1,0 +1,7 @@
+*.vpl
+*.rsf*
+*.txt
+
+.sconsign.dblite
+SConstruct
+result

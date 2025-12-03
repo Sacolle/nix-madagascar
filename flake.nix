@@ -2,7 +2,7 @@
     description = "A very basic flake";
 
     inputs = {
-        nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
+        nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
     };
     outputs = { self, nixpkgs }: 
     let 
@@ -12,5 +12,12 @@
     in 
     {
         packages.${system}.default = madagascar;
+        devShells.${system}.default = pkgs.mkShell {
+            buildInputs = [
+                pkgs.scons
+                madagascar
+                pkgs.libjpeg
+            ];
+        };
     };
 }

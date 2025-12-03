@@ -9,11 +9,13 @@
 
   python313,
   python313Packages,
-  scons
+  scons,
+    gcc13Stdenv,
+  cairo
   # autoreconfHook,
   # starpu dependencies
 }:
-stdenv.mkDerivation (finalAttrs: {
+gcc13Stdenv.mkDerivation (finalAttrs: {
     pname = "madagascar";
     system = "x86_64-linux";
     version = "4.2";
@@ -23,16 +25,24 @@ stdenv.mkDerivation (finalAttrs: {
         owner = "ahay";
         repo = "src";
         # url = "https://github.com/ahay/src/tree/madagascar-core-${version}";
-        rev = "23410e245404a67a8f252ba18f71d112b0348c4e";
-        hash = "sha256-8XYlx+t0J0lmr1WqVxFj8kVsJYF3rtzc9GVzQvt+LCI=";
+        rev = "3cd212fda36aeba82a598e93d162818c49adb385";
+        hash = "sha256-NzzMAi5jxS3FYPN1mH44gKG3ZVlUwpbG4M69rR9GeRk=";
     };
+
+    postUnpack = ''
+        echo "removing unwanted directory" $sourceRoot 
+        rm -rf $sourceRoot/user
+    '';
 
     nativeBuildInputs = [
         # writableTmpDirAsHomeHook
         # autoreconfHook
+        cairo
     ];
 
     buildInputs = [
+        cairo
+
         python313
         python313Packages.pip
         scons
@@ -41,6 +51,11 @@ stdenv.mkDerivation (finalAttrs: {
     configureFlags = [
         #"--prefix=$out"
     ];
+    preBuild = ''
+      echo "Using GCC version:"
+      $CC --version
+        echo cairo $CAIRO-PDF
+    '';
 
 
       postConfigure = ''
