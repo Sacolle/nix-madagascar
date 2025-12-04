@@ -10,7 +10,27 @@
   python313,
   python313Packages,
   scons,
-  gcc13Stdenv
+  gcc13Stdenv,
+
+
+  # Packages for the pens
+
+  libx11, # add the .dev
+  libxaw,
+  # dont think i need this, but
+  libgcc,
+
+  libtiff,
+  gd,
+  plplot,
+  ffmpeg,
+  cairo,
+  libjpeg,
+
+  #opengl
+  freeglut,
+  # glui
+
   # autoreconfHook,
   # starpu dependencies
 }:
@@ -25,7 +45,7 @@ gcc13Stdenv.mkDerivation (finalAttrs: {
         repo = "src";
         # url = "https://github.com/ahay/src/tree/madagascar-core-${version}";
         rev = "3cd212fda36aeba82a598e93d162818c49adb385";
-        hash = "sha256-NzzMAi5jxS3FYPN1mH44gKG3ZVlUwpbG4M69rR9GeRk=";
+        hash = "sha256-KvxbrUFfumR5X4CQFpDDXEnwKKuK9uV5MiouH5zPe1g=";
     };
 
     postUnpack = ''
@@ -33,12 +53,30 @@ gcc13Stdenv.mkDerivation (finalAttrs: {
         rm -rf $sourceRoot/user
     '';
 
+ preConfigure = ''
+        echo $LIBS
+  '';
+
     nativeBuildInputs = [
-        # writableTmpDirAsHomeHook
-        # autoreconfHook
+        scons
+
+        libtiff.dev
+        libtiff
     ];
 
     buildInputs = [
+        # testing if they are recognized
+        libx11 # add the .dev?
+        libx11.dev
+
+        libxaw
+        libxaw.dev
+
+        libgcc
+
+        libtiff.dev
+        libtiff
+
         python313
         python313Packages.pip
         scons
