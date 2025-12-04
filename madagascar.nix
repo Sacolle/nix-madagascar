@@ -10,8 +10,7 @@
   python313,
   python313Packages,
   scons,
-    gcc13Stdenv,
-  cairo
+  gcc13Stdenv
   # autoreconfHook,
   # starpu dependencies
 }:
@@ -37,12 +36,9 @@ gcc13Stdenv.mkDerivation (finalAttrs: {
     nativeBuildInputs = [
         # writableTmpDirAsHomeHook
         # autoreconfHook
-        cairo
     ];
 
     buildInputs = [
-        cairo
-
         python313
         python313Packages.pip
         scons
