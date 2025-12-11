@@ -77,5 +77,6 @@ The file in the repo that defines that step is this one:
 
 https://github.com/ahay/src/blob/3cd212fda36aeba82a598e93d162818c49adb385/framework/configure.py#L594
 
+## Configuring
 
-so work and stuff man.
+So, in the [setenv.py](https://github.com/ahay/src/blob/3cd212fda36aeba82a598e93d162818c49adb385/framework/setenv.py#L82), it initalized a config.py that holds infor path and stuff. I believe that this is where the acessed context is defined, so by doing a step by step derivation, i could see the default config.py generated. With that file, it would be simple to write some injection or write one with the configs passed to the derivation.
