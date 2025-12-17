@@ -80,3 +80,20 @@ https://github.com/ahay/src/blob/3cd212fda36aeba82a598e93d162818c49adb385/framew
 ## Configuring
 
 So, in the [setenv.py](https://github.com/ahay/src/blob/3cd212fda36aeba82a598e93d162818c49adb385/framework/setenv.py#L82), it initalized a config.py that holds infor path and stuff. I believe that this is where the acessed context is defined, so by doing a step by step derivation, i could see the default config.py generated. With that file, it would be simple to write some injection or write one with the configs passed to the derivation.
+
+
+## Coisas
+
+```
+nix-shell -p python313 python313Packages.pip scons pkg-config libtiff
+
+./configure CFLAGS="$NIX_CFLAGS_COMPILE" LIBPATH='/nix/store/9mzjwp20ds2p4ylzhs6q1qgr921asizm-libtiff-4.7.0/lib,/nix/store/9mzjwp20ds2p4ylzhs6q1qgr921asizm-libtiff-4.7.0/lib' --prefix=.
+```
+
+out of $NIX\_CFLAGS\_COMPILE
+```
+-frandom-seed=kyc7aa8m13 -isystem /nix/store/iyff8129iampdw13nlfqalzhxy8y1hi9-python3-3.13.6/include -isystem /nix/store/wnlv4y888lggq0haibpwfzsl2vhlkciv-libtiff-4.7.0-dev/include -isystem /nix/store/iyff8129iampdw13nlfqalzhxy8y1hi9-python3-3.13.6/include -isystem /nix/store/wnlv4y888lggq0haibpwfzsl2vhlkciv-libtiff-4.7.0-dev/include
+```
+
+
+- Ver como fazer o log ser mais verboso, para mostrar os args passados ao config

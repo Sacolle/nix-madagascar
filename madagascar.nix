@@ -1,5 +1,3 @@
-#
-
 { 
   # derivation dependencies
   lib,
@@ -34,12 +32,16 @@
   # autoreconfHook,
   # starpu dependencies
 }:
-gcc13Stdenv.mkDerivation (finalAttrs: {
+gcc13Stdenv.mkDerivation (finalAttrs: 
+let 
+    mkLibPaths = libs: builtins.concatStringsSep "," (map (p: "${p}/lib") libs);
+    mkIncludePaths = inc: builtins.concatStringsSep " " (map (p: "-isystem ${p}/include") inc);
+in
+{
     pname = "madagascar";
     system = "x86_64-linux";
     version = "4.2";
 
-    # TODO: validar que está certo
     src = fetchFromGitHub {
         owner = "ahay";
         repo = "src";
@@ -48,14 +50,19 @@ gcc13Stdenv.mkDerivation (finalAttrs: {
         hash = "sha256-KvxbrUFfumR5X4CQFpDDXEnwKKuK9uV5MiouH5zPe1g=";
     };
 
+
     postUnpack = ''
         echo "removing unwanted directory" $sourceRoot 
         rm -rf $sourceRoot/user
     '';
 
- preConfigure = ''
-        echo $LIBS
-  '';
+    preConfigure = ''
+        configureFlagsArray+=(
+          "CFLAGS=${mkIncludePaths [ libtiff.dev libx11.dev python313 ] }"
+          "LIBPATH=${mkLibPaths [ libtiff.out libx11.out ] }"
+        )
+      '';
+
 
     nativeBuildInputs = [
         scons
@@ -65,15 +72,6 @@ gcc13Stdenv.mkDerivation (finalAttrs: {
     ];
 
     buildInputs = [
-        # testing if they are recognized
-        libx11 # add the .dev?
-        libx11.dev
-
-        libxaw
-        libxaw.dev
-
-        libgcc
-
         libtiff.dev
         libtiff
 
@@ -82,17 +80,16 @@ gcc13Stdenv.mkDerivation (finalAttrs: {
         scons
     ];
 
-    configureFlags = [
-        #"--prefix=$out"
-    ];
+
     preBuild = ''
       echo "Using GCC version:"
       $CC --version
-        echo cairo $CAIRO-PDF
+      echo cairo $CAIRO-PDF
     '';
 
 
       postConfigure = ''
+        cat config.log
         # Patch shebangs recursively because a lot of scripts are used
         shopt -s globstar
         patchShebangs --build **/*.sh
