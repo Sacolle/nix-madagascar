@@ -3,6 +3,7 @@
   lib,
   stdenv,
   fetchFromGitHub,
+  pkg-config,
   #writableTmpDirAsHomeHook,
 
   python313,
@@ -18,6 +19,11 @@
 
   libx11, # add the .dev
   libxaw,
+  libxt,
+  libxmu,
+  libsm,
+  libice,
+  xorg, # for xorg proto
 
   libtiff,
   gd,
@@ -42,12 +48,19 @@ let
     mkIncludePaths = inc: builtins.concatStringsSep " " (map (p: "-isystem ${p}/include") inc);
     includePkgs = [
         # rpc
-        libtirpc.dev
+	# the config does something weird and adds the rpc name based on the OS,
+	# given the OS is not on the list, it seems that it never appends -ltirpc on the linker
+        # libtirpc.dev
         # ppm
         netpbm.dev
         #X11 headers ( )
         libx11.dev
         libxaw.dev
+	libxt.dev
+	libxmu.dev
+	libsm.dev
+	libice.dev
+	xorg.xorgproto
         # OpenGL (X)
         freeglut.dev
         libGLU.dev
@@ -71,15 +84,20 @@ let
         " -isystem ${plplot.out}/include/plplot"
         " -isystem ${cairo.dev}/include/cairo"
         " -isystem ${ffmpeg.dev}/include/libavcodec"
-        " -isystem ${libtirpc.dev}/include/tirpc/rpc"
         " -isystem ${netpbm.dev}/include/netpbm"
+        # " -isystem ${libtirpc.dev}/include/tirpc"
     ];
 
     libPkgs = [
-        libtirpc.out
+        # libtirpc.out
         netpbm.out
         libx11.out
         libxaw.out
+	libxt.out
+	libxmu.out
+	libsm.out
+	libice.out
+	xorg.xorgproto
         freeglut.out
         libGLU.out
         libGL.out
@@ -107,34 +125,28 @@ in
 
 
     postUnpack = ''
-        echo ${mkIncludePaths includePkgs}
+     	echo ${mkIncludePaths includePkgs}
         echo "removing unwanted directory" $sourceRoot 
         rm -rf $sourceRoot/user
     '';
 
+
     preConfigure = ''
         configureFlagsArray+=(
-          "CFLAGS=${ (mkIncludePaths includePkgs) + extraIncludeFlags }"
+	  "CFLAGS=${ (mkIncludePaths includePkgs) + extraIncludeFlags }"
           "LIBPATH=${ mkLibPaths libPkgs }"
+	  "XINC=${libxaw.dev}/include"
+	  "XLIBPATH=${libx11.out}/lib"
         )
       '';
 
-
-    nativeBuildInputs = [ ];
+    nativeBuildInputs = [ pkg-config ];
 
     buildInputs = [
         python313
         python313Packages.pip
         scons
-    ] ++ includePkgs ++ libPkgs;
-
-
-    preBuild = ''
-      echo "Using GCC version:"
-      $CC --version
-      echo cairo $CAIRO-PDF
-    '';
-
+    ] ++ libPkgs ++ includePkgs;
 
       postConfigure = ''
         cat config.log
